@@ -9,10 +9,9 @@ import (
 type Members []Member //надбудова над масивами
 
 type Member struct {
-	Name             string
-	Email            string
-	ID               int
-	RegistrationDate time.Time
+	Name             string    `json:"name"`
+	Email            string    `json:"email"`
+	RegistrationDate time.Time `json:"registration_date"`
 }
 
 func (m Member) Validate() error {
