@@ -12,3 +12,4 @@ coverage.xml
 cover-cobertura.xml
 bin/
 cover.out.tmp
+testlogfile
