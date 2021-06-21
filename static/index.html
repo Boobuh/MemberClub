@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+        Member club
+    </title>
+</head>
+
+<body style="text-align:center;" id="body">
+<h1 style="color:black;">
+    Welcome to the Club!
+</h1>
+
+<p style="text-align:left; font-weight: bold; font-size: 18px" >New member
+    <!-- Making a text input -->
+    <p style="text-align:left">Name:
+    <input type="text" id="name" placeholder="Name" >
+    </p>
+<p style="text-align:left">Email:
+    <input type="text" id="email" placeholder="Email" >
+    </p>
+<p style="padding: 3px">
+    <!-- Button to send data -->
+    <button onclick="sendJSON()"  style="float: left; margin-left: 44px">Add</button>
+    <!-- Button to refresh -->
+    <button onclick="clearPage()"  style="float: left; margin-left: 89px">Clear</button>
+</p>
+</p>
+
+<table id = "members-table" class="table" style="text-align:center; margin: auto; border: 2px solid black;width: 90%">
+    <p  style="font-weight: bold; text-align: center; margin-left: auto; margin-right: auto; left: 50%; right: 50%; padding: 25px; font-size: 24px ">Members</p>
+    <thead style="text-align:center; float:inherit">
+    <tr style="text-align:center;border: 3px solid black; padding: 3px;">
+        <th style="text-align:center; float:inherit;padding: 3px; border: 1px solid black">#</th>
+        <th style="text-align:center; float:inherit;padding: 3px; border: 1px solid black">Name</th>
+        <th style="text-align:center; float:inherit;padding: 3px; border: 1px solid black">Email</th>
+        <th style="text-align:center; float:inherit;padding: 3px; border: 1px solid black">Registration date</th>
+    </tr>
+    </thead>
+    <tbody style="text-align:center;border: 3px solid black; padding: 3px;float:inherit;">
+    <tr style="text-align:center;border: 3px solid black; padding: 3px;">
+    </tr>
+    </tbody>
+</table>
+
+<!-- Include the JavaScript file -->
+<script type="text/javascript">
+
+    const membersBody = document.querySelector("#members-table > tbody");
+
+    function loadMembers(){
+
+        const request = new XMLHttpRequest();
+
+        request.open("GET","http://localhost:8000/members");
+        request.onload = () => {
+            try {
+                const json = JSON.parse(request.responseText);
+                populateMembers(json);
+            } catch (err) {
+              console.warn(err);
+            }
+
+        };
+
+        request.send();
+
+    }
+    function populateMembers(json){
+
+            //clears table data
+            while (membersBody.firstChild){
+                membersBody.removeChild(membersBody.firstChild);
+            }
+
+            //populate table
+            let i = 0;
+            json.forEach((row) => {
+                i++;
+                row.iD = i;
+
+                const tr = document.createElement("tr");
+
+                        let keys = ["iD", "name", "email", "registration_date"];
+                        for ( let j = 0; j < keys.length; j++){
+                        let cell = row[keys[j]];
+
+                    const td = document.createElement("td");
+
+                    td.style.textAlign = "center";
+                    td.style.float = "inherit";
+                    td.style.padding = "3px";
+                    td.style.border = "1px solid black";
+
+                    td.textContent = cell;
+                    tr.appendChild(td);
+
+                }
+
+                membersBody.appendChild(tr);
+            });
+
+    }
+    function sendJSON(){
+
+            let result = document.querySelector('.result');
+            let name = document.querySelector('#name');
+            let email = document.querySelector('#email');
+
+            // Creating a XHR object
+            let xhr = new XMLHttpRequest();
+            let url = "http://localhost:8000/members";
+
+
+            // open a connection
+            xhr.open("POST", url, true);
+            // Set the request header i.e. which type of content you are sending
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            // Create a state change callback
+            xhr.onreadystatechange = function () {
+                if (xhr.status !== 201) {
+
+                    // Print received data from server
+                    result.innerHTML = this.responseText;
+
+                }
+            };
+
+            // Converting JSON data to string
+            let data = JSON.stringify({ "name": name.value, "email": email.value });
+            console.log(data);
+
+            // Sending data with the request
+            xhr.send(data);
+
+        setTimeout(loadMembers, 1000);
+
+        }
+    function clearPage(){
+          window.location.reload(true);
+      }
+
+
+</script>
+</body>
+</html>

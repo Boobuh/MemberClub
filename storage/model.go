@@ -6,6 +6,11 @@ import (
 	"time"
 )
 
+var (
+	ErrInvalidName  = errors.New("invalid name")
+	ErrInvalidEmail = errors.New("invalid email")
+)
+
 type Members []Member //надбудова над масивами
 
 type Member struct {
@@ -17,10 +22,13 @@ type Member struct {
 func (m Member) Validate() error {
 
 	if !isLetter(m.Name) {
-		return errors.New("")
+		return ErrInvalidName
 	}
 	_, err := mail.ParseAddress(m.Email)
-	return err
+	if err != nil {
+		return ErrInvalidEmail
+	}
+	return nil
 
 }
 
@@ -28,7 +36,6 @@ func (m *Member) SetRegistrationDate() {
 	m.RegistrationDate = time.Now()
 }
 
-//perevirka na bukvy
 func isLetter(s string) bool {
 	for _, r := range s {
 		if (r < 'a' || r > 'z') && (r < 'A' || r > 'Z') {
